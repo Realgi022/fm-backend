@@ -1,4 +1,4 @@
-namespace BusinessLogic
+namespace Api
 {
     public class WeatherForecast
     {

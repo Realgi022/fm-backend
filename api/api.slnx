@@ -1,4 +1,6 @@
 <Solution>
-  <Project Path="BusinessLogic/BusinessLogic.csproj" Id="7abe0ba6-12b9-4620-9666-a31ed9fbd8d3" />
+  <Project Path="Api/Api.csproj" Id="7abe0ba6-12b9-4620-9666-a31ed9fbd8d3" />
+  <Project Path="BusinessLogic/BusinessLogic.csproj" Id="07cfe48e-71cc-46f2-9e51-d12b55a50b0c" />
   <Project Path="DAL/DAL.csproj" Id="94dbaca5-0e87-4b98-92a0-4521e5e0e699" />
+  <Project Path="Tests/Tests.csproj" Id="62f677d7-6c37-46a4-8bc0-f89cc0b68f73" />
 </Solution>
