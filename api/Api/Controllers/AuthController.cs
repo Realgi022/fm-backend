@@ -70,7 +70,7 @@ namespace Api.Controllers
 
         // POST: /auth/login
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             if (request == null)
             {
@@ -80,7 +80,7 @@ namespace Api.Controllers
                 });
             }
 
-            if (string.IsNullOrWhiteSpace(request.email) || string.IsNullOrWhiteSpace(request.password))
+            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             {
                 return BadRequest(new
                 {
@@ -88,23 +88,27 @@ namespace Api.Controllers
                 });
             }
 
-            // Fake login check
-            if (request.email != "test@test.com" || request.password != "Password123")
+            try
+            {
+                var user = await _authService.LoginAsync(request.Email, request.Password);
+
+                var response = new LoginResponse
+                {
+                    Message = "Login successful",
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
             {
                 return Unauthorized(new
                 {
-                    message = "Invalid email or password"
+                    message = ex.Message
                 });
             }
-
-            var response = new AuthResponse
-            {
-                Token = "fake-jwt-token",
-                ExpiresIn = 3600,
-                Message = "Login successful"
-            };
-
-            return Ok(response);
         }
     }
 }

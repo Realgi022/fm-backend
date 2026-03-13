@@ -37,5 +37,23 @@ namespace BusinessLogic.Services
 
             return await _userRepository.CreateAsync(user);
         }
+
+        public async Task<User> LoginAsync(string email, string password)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+
+            if (user == null)
+            {
+                throw new Exception("Invalid email or password.");
+            }
+
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+
+            if (isPasswordValid)
+            {
+                throw new Exception("Invalid email or password.");
+            }
+            return user;
+        }
     }
 }
