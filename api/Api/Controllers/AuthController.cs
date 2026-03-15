@@ -90,12 +90,11 @@ namespace Api.Controllers
             {
                 var user = await _authService.LoginAsync(request.Email, request.Password);
 
-                var response = new LoginResponse
+                var response = new AuthResponse
                 {
-                    Message = "Login successful",
-                    Id = user.Id,
-                    Name = user.Name,
-                    Email = user.Email
+                    Token = "fake-jwt-token",
+                    ExpiresIn = 3600,
+                    Message = "Authentication successful"
                 };
 
                 return Ok(response);
