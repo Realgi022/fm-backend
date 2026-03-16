@@ -1,4 +1,5 @@
-﻿using DAL.Entities;
+﻿using BusinessLogic.Models;
+using DAL.Entities;
 
 namespace BusinessLogic.Interfaces
 {

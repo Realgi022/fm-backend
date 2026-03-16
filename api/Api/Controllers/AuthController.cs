@@ -1,4 +1,5 @@
 ﻿using Api.DTOs;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,28 +18,14 @@ namespace Api.Controllers
 
         // POST: /auth/register
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
-            if (request == null)
-            {
-                return BadRequest(new
-                {
-                    message = "The server could not understand the request due to invalid syntax."
-                });
-            }
-
-            if (string.IsNullOrWhiteSpace(request.Name) ||
-                string.IsNullOrWhiteSpace(request.Email) ||
-                string.IsNullOrWhiteSpace(request.Password))
-            {
-                return BadRequest(new
-                {
-                    message = "Name, email and password are required."
-                });
-            }
-
             try
             {
+                if (request == null)
+                {
+                    throw new InvalidSyntaxException();
+                }
                 var user = await _authService.RegisterAsync(
                     request.Name,
                     request.Email,
@@ -47,7 +34,7 @@ namespace Api.Controllers
                     request.PreferredCurrency
                 );
 
-                var response = new AuthResponse
+                var response = new AuthResponseDto
                 {
                     Token = "fake-jwt-token",
                     ExpiresIn = 3600,
@@ -57,53 +44,70 @@ namespace Api.Controllers
                 return StatusCode(201, response);
 
             }
-            catch (Exception ex)
+            catch (InvalidSyntaxException ex)
             {
-                return BadRequest(new
+                return StatusCode(400, new
                 {
                     message = ex.Message
                 });
+            }
+            catch (EmailAlreadyExistsException ex)
+            {
+                return StatusCode(409, new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "The server encountered an unexpected condition that prevented it from fulfilling the request.");
             }
         }
 
         // POST: /auth/login
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
         {
-            if (request == null)
-            {
-                return BadRequest(new
-                {
-                    message = "The server could not understand the request due to invalid syntax."
-                });
-            }
-
-            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
-            {
-                return BadRequest(new
-                {
-                    message = "Email and password are required"
-                });
-            }
-
             try
             {
-                var user = await _authService.LoginAsync(request.Email, request.Password);
+                if (loginRequestDto == null)
+                {
+                    throw new InvalidSyntaxException();
+                }
+                if (string.IsNullOrWhiteSpace(loginRequestDto.Email) || !loginRequestDto.Email.Contains("@") || string.IsNullOrWhiteSpace(loginRequestDto.Password))
+                {
+                    throw new InvalidCredentialsException();
+                }
+                var user = await _authService.LoginAsync(loginRequestDto.Email, loginRequestDto.Password);
 
-                var response = new AuthResponse
+                var response = new AuthResponseDto
                 {
                     Token = "fake-jwt-token",
                     ExpiresIn = 3600,
                     Message = "Authentication successful"
                 };
 
-                return Ok(response);
+                return StatusCode(200, response);
             }
-            catch (Exception ex)
+            catch (InvalidSyntaxException ex)
             {
-                return Unauthorized(new
+                return StatusCode(400, new
                 {
                     message = ex.Message
+                });
+            }
+            catch (InvalidCredentialsException ex)
+            {
+                return StatusCode(401, new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new
+                {
+                    message = "The server encountered an unexpected condition that prevented it from fulfilling the request."
                 });
             }
         }
