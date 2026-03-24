@@ -10,6 +10,7 @@ namespace DAL
         {
         }
         public DbSet<User> Users { get; set; }
-
+        public DbSet<Transaction> Transactions { get; internal set; }
+        public DbSet<Budget> Budgets { get; internal set; }
     }
 }

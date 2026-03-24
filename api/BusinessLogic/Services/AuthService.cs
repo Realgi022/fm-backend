@@ -1,19 +1,20 @@
-﻿using BCrypt.Net;
-using BusinessLogic.Exceptions;
+﻿using BusinessLogic.Exceptions;
 using BusinessLogic.Interfaces;
 using BusinessLogic.Models;
 using DAL.Entities;
-using DAL.Repositories;
+using DAL.Interfaces;
 
 namespace BusinessLogic.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IJwtTokenService _jwtTokenService;
 
-        public AuthService(IUserRepository userRepository)
+        public AuthService(IUserRepository userRepository, IJwtTokenService jwtTokenService)
         {
             _userRepository = userRepository;
+            _jwtTokenService = jwtTokenService;
         }
 
         public async Task<AuthResponseDto> RegisterAsync(string name, string email, string password, string country, string preferredCurrency)
@@ -27,7 +28,7 @@ namespace BusinessLogic.Services
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
 
-            await _userRepository.CreateAsync(new User
+            User user = new User
             {
                 Name = name,
                 Email = email,
@@ -35,12 +36,16 @@ namespace BusinessLogic.Services
                 Country = country,
                 PreferredCurrency = preferredCurrency,
                 CreatedAt = DateTime.UtcNow
-            });
+            };
 
+            var createdUser = await _userRepository.CreateAsync(user);
+
+            var token = _jwtTokenService.GenerateToken(createdUser);
+            var expiresIn = _jwtTokenService.GetTokenExpirationInSeconds();
             var response = new AuthResponseDto
             {
-                Token = "fake-jwt-token",
-                ExpiresIn = 3600,
+                Token = token,
+                ExpiresIn = expiresIn,
                 Message = "User successfully registered"
             };
 
@@ -57,10 +62,12 @@ namespace BusinessLogic.Services
                 throw new InvalidCredentialsException();
             }
 
+            var token = _jwtTokenService.GenerateToken(user);
+            var expiresIn = _jwtTokenService.GetTokenExpirationInSeconds();
             var response = new AuthResponseDto
             {
-                Token = "fake-jwt-token",
-                ExpiresIn = 3600,
+                Token = token,
+                ExpiresIn = expiresIn,
                 Message = "Authentication successful"
             };
 
