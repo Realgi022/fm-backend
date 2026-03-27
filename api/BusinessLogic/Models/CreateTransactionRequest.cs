@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DAL.Enum;
 
 namespace BusinessLogic.Models
 {

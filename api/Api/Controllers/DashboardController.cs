@@ -44,7 +44,7 @@ namespace Api.Controllers
                 var result = await _dashboardService.GetDashboardOverviewAsync(userId);
                 return Ok(result);
             }
-            catch (InvalidCredentialException ex)
+            catch (InvalidCredentialException)
             {
                 return Unauthorized(new ErrorResponse 
                 { 

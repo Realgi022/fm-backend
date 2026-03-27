@@ -53,11 +53,39 @@ namespace Api.Controllers
             
         }
 
-        [HttpGet("transactions")]
-        public async Task<IActionResult> GetTransactions()
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetTransactions([FromQuery] GetTransactionsQuery query)
         {
-            // Implementation for retrieving transactions
-            return Ok();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    Message = "The server could not understand the request due to invalid syntax."
+                });
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new ErrorResponse { Message = "Missing or invalid JWT token." });
+            }
+
+            try
+            {
+                var transactions = await _transactionService.GetTransactionsAsync(userId, query);
+
+                return Ok(new
+                {
+                    message = "Transactions retrieved successfully",
+                    data = transactions
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ErrorResponse { Message = "The server encountered an unexpected condition that prevented it from fullfilling the request" });
+            }
+            { }
         }
     }
 }

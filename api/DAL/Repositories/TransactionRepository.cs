@@ -1,4 +1,5 @@
 ﻿using DAL.Entities;
+using DAL.Enum;
 using DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +35,37 @@ namespace DAL.Repositories
             _context.Transactions.Add(transaction);
             await _context.SaveChangesAsync();
             return transaction;
+        }
+
+        public async Task<List<Transaction>> GetFilteredAsync(int userId, TransactionType? type, string? category, DateTime? startDate, DateTime? endDate)
+        {
+            var query = _context.Transactions
+                .Where(t => t.UserId == userId)
+                .AsQueryable();
+
+            if (type.HasValue)
+            {
+                query = query.Where(t => t.Type == type.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                query = query.Where(t => t.Category.ToLower() == category.ToLower());
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(t => t.Date >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(t => t.Date < endDate.Value);
+            }
+
+            return await query
+                .OrderByDescending(t => t.Date)
+                .ToListAsync();
         }
     }
 }

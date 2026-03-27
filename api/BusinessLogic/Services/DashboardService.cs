@@ -1,6 +1,7 @@
 ﻿using BusinessLogic.Interfaces;
 using BusinessLogic.Models;
 using DAL.Entities;
+using DAL.Enum;
 using DAL.Interfaces;
 using System.Security.Authentication;
 
