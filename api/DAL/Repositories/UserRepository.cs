@@ -1,5 +1,5 @@
-﻿using BusinessLogic.Interfaces;
-using DAL.Entities;
+﻿using DAL.Entities;
+using DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
@@ -17,6 +17,12 @@ namespace DAL.Repositories
         {
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User?> GetByIdAsync(int id)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<User> CreateAsync(User user)

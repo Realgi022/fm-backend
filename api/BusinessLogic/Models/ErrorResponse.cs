@@ -1,6 +1,6 @@
 ﻿namespace Api.DTOs
 {
-    public class ErrorResponseDto
+    public class ErrorResponse
     {
         public string Message { get; set; } = string.Empty;
     }

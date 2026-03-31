@@ -24,7 +24,5 @@ namespace BusinessLogic.Models
         public string? Description { get; set; }
 
         [Required]
-        [RegularExpression(@"^\d{4}-\d{2}-\d{2}$", ErrorMessage = "Date must be in format yyyy-MM-dd")]
-        public string Date { get; set; } = string.Empty;
     }
 }

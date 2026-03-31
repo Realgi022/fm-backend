@@ -19,15 +19,15 @@ namespace Api.Controllers
 
         // POST: /auth/register
         [HttpPost("register")]
-        [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status409Conflict)]
-        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+        [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new ErrorResponseDto
+                return BadRequest(new ErrorResponse
                 {
                     Message = "The server could not understand the request due to invalid syntax."
                 });
@@ -48,14 +48,14 @@ namespace Api.Controllers
             }
             catch (EmailAlreadyExistsException ex)
             {
-                return StatusCode(409, new ErrorResponseDto
+                return StatusCode(409, new ErrorResponse
                 {
                     Message = ex.Message
                 });
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseDto
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse
                 {
                     Message = "The server encountered an unexpected condition that prevented it from fulfilling the request."
                 });
@@ -64,34 +64,34 @@ namespace Api.Controllers
 
         // POST: /auth/login
         [HttpPost("login")]
-        [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
+        [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new ErrorResponseDto
+                return BadRequest(new ErrorResponse
                 {
                     Message = "The server could not understand the request due to invalid syntax."
                 });
             }
             try
             {
-                var response = await _authService.LoginAsync(loginRequestDto.Email, loginRequestDto.Password);
+                var response = await _authService.LoginAsync(loginRequest.Email, loginRequest.Password);
                 return Ok(response);
             }
             catch (InvalidCredentialsException ex)
             {
-                return Unauthorized(new ErrorResponseDto
+                return Unauthorized(new ErrorResponse
                 {
                     Message = ex.Message
                 });
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponseDto
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse
                 {
                     Message = "The server encountered an unexpected condition that prevented it from fulfilling the request."
                 });

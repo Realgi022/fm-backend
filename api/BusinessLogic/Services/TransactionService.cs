@@ -100,7 +100,6 @@ namespace BusinessLogic.Services
             var mappedTransactions = new List<TransactionResponse>();
             foreach (var transaction in transactions) 
             {
-                mappedTransactions.Add(TransactionMapper.ToResponse(transaction));
             }
 
             return mappedTransactions;
@@ -130,12 +129,10 @@ namespace BusinessLogic.Services
             transaction.Currency = request.Currency ?? transaction.Currency;
             transaction.Category = request.Category;
             transaction.Description = request.Description;
-            transaction.Date = DateTime.ParseExact(request.Date, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             transaction.UpdatedAt = DateTime.UtcNow;
 
             var updatedTransaction = await _transactionRepository.UpdateAsync(transaction);
 
-            return TransactionMapper.ToResponse(updatedTransaction);
         }
         public async Task DeleteTransactionAsync(int transactionId, int userId)
         {

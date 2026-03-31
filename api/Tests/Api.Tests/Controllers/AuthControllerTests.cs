@@ -23,7 +23,7 @@ namespace Api.Tests.Controllers
         [Fact]
         public async Task Register_WhenModelStateIsInvalid_ReturnsBadRequest()
         {
-            var request = new RegisterRequestDto();
+            var request = new RegisterRequest();
 
             _controller.ModelState.AddModelError("Name", "Name is required");
 
@@ -36,7 +36,7 @@ namespace Api.Tests.Controllers
         [Fact]
         public async Task Register_WhenSuccessful_Returns201()
         {
-            var request = new RegisterRequestDto
+            var request = new RegisterRequest
             {
                 Name = "Konstantin",
                 Email = "test@test.com",
@@ -45,7 +45,7 @@ namespace Api.Tests.Controllers
                 PreferredCurrency = "EUR"
             };
 
-            var response = new AuthResponseDto
+            var response = new AuthResponse
             {
                 Token = "fake-jwt-token",
                 ExpiresIn = 3600,
@@ -66,14 +66,14 @@ namespace Api.Tests.Controllers
             var objectResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(201, objectResult.StatusCode);
 
-            var value = Assert.IsType<AuthResponseDto>(objectResult.Value);
+            var value = Assert.IsType<AuthResponse>(objectResult.Value);
             Assert.Equal("User successfully registered", value.Message);
         }
 
         [Fact]
         public async Task Register_WhenEmailAlreadyExists_Returns409()
         {
-            var request = new RegisterRequestDto
+            var request = new RegisterRequest
             {
                 Name = "Konstantin",
                 Email = "test@test.com",
@@ -100,7 +100,7 @@ namespace Api.Tests.Controllers
         [Fact]
         public async Task Register_WhenUnexpectedException_Returns500()
         {
-            var request = new RegisterRequestDto
+            var request = new RegisterRequest
             {
                 Name = "Konstantin",
                 Email = "test@test.com",
@@ -127,7 +127,7 @@ namespace Api.Tests.Controllers
         [Fact]
         public async Task Login_WhenModelStateIsInvalid_ReturnsBadRequest()
         {
-            var request = new LoginRequestDto();
+            var request = new LoginRequest();
 
             _controller.ModelState.AddModelError("Email", "Email is required");
 
@@ -140,13 +140,13 @@ namespace Api.Tests.Controllers
         [Fact]
         public async Task Login_WhenSuccessful_Returns200()
         {
-            var request = new LoginRequestDto
+            var request = new LoginRequest
             {
                 Email = "test@test.com",
                 Password = "Password123"
             };
 
-            var response = new AuthResponseDto
+            var response = new AuthResponse
             {
                 Token = "fake-jwt-token",
                 ExpiresIn = 3600,
@@ -162,14 +162,14 @@ namespace Api.Tests.Controllers
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, okResult.StatusCode);
 
-            var value = Assert.IsType<AuthResponseDto>(okResult.Value);
+            var value = Assert.IsType<AuthResponse>(okResult.Value);
             Assert.Equal("Authentication successful", value.Message);
         }
 
         [Fact]
         public async Task Login_WhenCredentialsAreInvalid_Returns401()
         {
-            var request = new LoginRequestDto
+            var request = new LoginRequest
             {
                 Email = "test@test.com",
                 Password = "wrongpassword"
@@ -188,7 +188,7 @@ namespace Api.Tests.Controllers
         [Fact]
         public async Task Login_WhenUnexpectedException_Returns500()
         {
-            var request = new LoginRequestDto
+            var request = new LoginRequest
             {
                 Email = "test@test.com",
                 Password = "Password123"
