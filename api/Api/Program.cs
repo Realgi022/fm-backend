@@ -45,6 +45,14 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+var geminiKey = builder.Configuration["GeminiSettings:APIKey"];
+
+if (string.IsNullOrWhiteSpace(geminiKey))
+{
+    throw new InvalidOperationException("Gemini API key is missing.");
+}
+
+
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -83,6 +91,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IBudgetRepository, BudgetRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IAIRepository>(sp => new AIRepository(geminiKey));
 
 
 // Services
@@ -90,6 +99,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IAIService, AIService>();
 
 
 var app = builder.Build();
