@@ -4,6 +4,9 @@ namespace BusinessLogic.Interfaces
 {
     public interface ITransactionService
     {
+        Task<ConfirmedTransactionResponse> ConfirmScannedTransactionAsync(
+            ConfirmScannedTransactionRequest request,
+            int userId);
         Task<TransactionResponse> CreateTransactionAsync(int userId, CreateTransactionRequest request);
         Task<List<TransactionResponse>> GetTransactionsAsync(int userId, GetTransactionsQuery query);
         Task<TransactionResponse> UpdateTransactionAsync(int transactionId, int userId, UpdateTransactionRequest request);

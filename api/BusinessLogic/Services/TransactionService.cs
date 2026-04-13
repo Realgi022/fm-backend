@@ -160,5 +160,53 @@ namespace BusinessLogic.Services
         {
             _transactionRepository.DeleteAsync(transactionId, userId).Wait();
         }
+
+        public async Task<ConfirmedTransactionResponse> ConfirmScannedTransactionAsync(
+    ConfirmScannedTransactionRequest request,
+    int userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                throw new InvalidCredentialsException();
+            }
+
+            TransactionType transactionType = request.Type.Trim().ToLower() switch
+            {
+                "income" => TransactionType.Income,
+                "expense" => TransactionType.Expense,
+                _ => throw new Exception("Invalid transaction type.")
+            };
+
+            var transaction = new Transaction
+            {
+                UserId = userId,
+                Amount = request.Amount,
+                Currency = string.IsNullOrWhiteSpace(request.Currency)
+                    ? user.PreferredCurrency
+                    : request.Currency,
+                Category = request.Category,
+                Description = request.Description,
+                Date = request.Date,
+                Type = transactionType,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            var savedTransaction = await _transactionRepository.CreateAsync(transaction);
+
+            return new ConfirmedTransactionResponse
+            {
+                Id = savedTransaction.Id,
+                Type = savedTransaction.Type.ToString().ToLower(),
+                Amount = savedTransaction.Amount,
+                Currency = savedTransaction.Currency,
+                Category = savedTransaction.Category,
+                Description = savedTransaction.Description,
+                Date = savedTransaction.Date,
+                CreatedAt = savedTransaction.CreatedAt,
+                UpdatedAt = savedTransaction.UpdatedAt
+            };
+        }
     }
 }

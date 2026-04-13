@@ -1,10 +1,13 @@
-﻿using BusinessLogic.Interfaces;
+﻿using Api.DTOs;
+using BusinessLogic.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
     [ApiController]
     [Route("scan")]
+    [Authorize]
     public class AIController : ControllerBase
     {
         private readonly IAIService _aiService;
@@ -16,15 +19,19 @@ namespace Api.Controllers
 
         [HttpPost("receipt")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> ExtractTextFromReceipt(IFormFile file)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ScanReceipt([FromForm] ReceiptScanRequestDto request)
         {
-            if (file == null || file.Length == 0)
+            if (request.File == null || request.File.Length == 0)
             {
                 return BadRequest("No file uploaded.");
             }
 
-            var extractedText = await _aiService.ExtractTextFromReceipt(file);
-            return Ok(new { Text = extractedText });
+            var result = await _aiService.ExtractTextFromReceipt(request.File, request.DocumentType);
+            return Ok(result);
         }
     }
 }

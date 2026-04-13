@@ -52,6 +52,42 @@ namespace Api.Controllers
         }
 
         [Authorize]
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmScannedTransaction([FromBody] ConfirmScannedTransactionRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    Message = "The server could not understand the request due to invalid syntax."
+                });
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new ErrorResponse
+                {
+                    Message = "Unauthorized. Missing or invalid JWT token."
+                });
+            }
+
+            try
+            {
+                var confirmedTransaction = await _transactionService.ConfirmScannedTransactionAsync(request, userId);
+
+                return StatusCode(201, confirmedTransaction);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ErrorResponse
+                {
+                    Message = "The server encountered an unexpected condition that prevented it from fullfilling the request"
+                });
+            }
+        }
+
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetTransactions([FromQuery] GetTransactionsQuery query)
         {
