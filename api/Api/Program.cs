@@ -100,6 +100,7 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAIService, AIService>();
+builder.Services.AddScoped<IBudgetService, BudgetService>();
 
 
 var app = builder.Build();

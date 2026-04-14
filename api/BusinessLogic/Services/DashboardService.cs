@@ -46,7 +46,7 @@ namespace BusinessLogic.Services
 
             var totalBalance = await _transactionRepository.GetCurrentBalanceAsync(userId);
 
-            var budgetLimit = budget?.Amount ?? 0;
+            var budgetLimit = budget?.Limit ?? 0;
             var remaining = budgetLimit - expenses;
             var progressPercentage = budgetLimit <= 0
                 ? 0

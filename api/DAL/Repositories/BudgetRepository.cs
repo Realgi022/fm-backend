@@ -21,5 +21,17 @@ namespace DAL.Repositories
                     b.Year == year &&
                     b.Month == month);
         }
+
+        public async Task AddMonthlyBudgetAsync(Budget budget)
+        {
+            _context.Budgets.Add(budget);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateMonthlyBudgetAsync(Budget budget)
+        {
+            _context.Budgets.Update(budget);
+            await _context.SaveChangesAsync();
+        }
     }
 }

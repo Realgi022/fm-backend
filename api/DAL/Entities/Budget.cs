@@ -5,8 +5,10 @@ namespace DAL.Entities
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public double Amount { get; set; }
-        public int Year { get; internal set; }
-        public int Month { get; internal set; }
+        public double Limit { get; set; }
+        public int Year { get; set; }
+        public int Month { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
 }

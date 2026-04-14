@@ -11,21 +11,19 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("categories")]
-    public class CategoriesController : Controller
+    public class CategoriesController : ControllerBase
     {
         [HttpGet]
         public IActionResult GetCategories()
         {
-                // In a real application, you would fetch categories from a database based on the userId.
-                // For this example, we will return a static list of categories.
-            var items = Enum.GetValues(typeof(TransactionType))
-                .Cast<TransactionType>()
-                .Select(t => new CategoryItem
-                {
-                    Type = t.ToString().ToLowerInvariant(),
-                    Name = t.ToString()
-                })
-                .ToList();
+            var items = new List<CategoryItem>
+            {
+                new CategoryItem { Type = TransactionType.Income.ToString().ToLowerInvariant(), Name = "Salary" },
+                new CategoryItem { Type = TransactionType.Income.ToString().ToLowerInvariant(), Name = "Freelance" },
+
+                new CategoryItem { Type = TransactionType.Expense.ToString().ToLowerInvariant(), Name = "Food" },
+                new CategoryItem { Type = TransactionType.Expense.ToString().ToLowerInvariant(), Name = "Transport" }
+            };
 
             return Ok(new { items });
         }
