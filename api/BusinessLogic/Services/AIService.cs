@@ -57,9 +57,16 @@ Rules:
 - detectedFields must list only the fields actually detected
 - status must be one of: success, partial, failed
 - suggestedType must be either income or expense
-- currency must be a 3-letter currency code like EUR or USD
 - rawText must contain the OCR text
 - documentType is '{documentType}', so adapt extraction logic accordingly
+- currency must be a 3-letter currency code like EUR or USD
+- detect currency only from symbols and text visible on the receipt or invoice
+- if the document contains € or EUR, return EUR
+- if the document contains $ or USD, return USD
+- if the document contains £ or GBP, return GBP
+- do not guess USD by default
+- if no explicit currency symbol or 3-letter currency code is visible in the document, return null for currency
+- do not infer currency from merchant name, language, country, or assumptions
 ";
 
             var responseText = await _aiRepository.ExtractTextFromReceipt(prompt, file);
@@ -77,6 +84,24 @@ Rules:
             if (result == null)
             {
                 throw new Exception("Failed to parse Gemini response.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(result.RawText))
+            {
+                var raw = result.RawText.ToUpperInvariant();
+
+                if (raw.Contains("EUR") || raw.Contains("€"))
+                {
+                    result.Currency = "EUR";
+                }
+                else if (raw.Contains("USD") || raw.Contains("$"))
+                {
+                    result.Currency = "USD";
+                }
+                else if (raw.Contains("GBP") || raw.Contains("£"))
+                {
+                    result.Currency = "GBP";
+                }
             }
 
             return result;
