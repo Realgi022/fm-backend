@@ -9,7 +9,7 @@ namespace BusinessLogic.Models
         [Required]
         public string Type { get; set; } = string.Empty;
         [Required]
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
         [Required]
         public string Currency { get; set; } = string.Empty;
         [Required]

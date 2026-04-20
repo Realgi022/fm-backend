@@ -23,7 +23,7 @@ namespace DAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<double> GetCurrentBalanceAsync(int userId)
+        public async Task<decimal> GetCurrentBalanceAsync(int userId)
         {
             return await _context.Transactions
                 .Where(t => t.UserId == userId)

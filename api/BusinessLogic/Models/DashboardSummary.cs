@@ -5,10 +5,10 @@ namespace BusinessLogic.Models
     public class DashboardSummary
     {
         [Required]
-        public double TotalBalance { get; set; }
+        public decimal TotalBalance { get; set; }
         [Required]
-        public double Income { get; set; }
+        public decimal Income { get; set; }
         [Required]
-        public double Expenses { get; set; }
+        public decimal Expenses { get; set; }
     }
 }

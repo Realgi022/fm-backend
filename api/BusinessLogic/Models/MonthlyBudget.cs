@@ -10,11 +10,11 @@ namespace BusinessLogic.Models
     public class MonthlyBudget
     {
         [Required]
-        public double Spent { get; set; }
+        public decimal Spent { get; set; }
         [Required]
-        public double Limit { get; set; }
+        public decimal Limit { get; set; }
         [Required]
-        public double Remaining { get; set; }
+        public decimal Remaining { get; set; }
         [Required]
         public int ProgressPercentage { get; set; }
     }

@@ -8,7 +8,7 @@ namespace DAL.Entities
 
         public int UserId { get; set; }
 
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
         public string Currency { get; set; } = string.Empty;
 

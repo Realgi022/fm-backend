@@ -9,6 +9,6 @@ namespace BusinessLogic.BudgetModels
 
         [Required]
         [Range(0.01, double.MaxValue)]
-        public double Limit { get; set; }
+        public decimal Limit { get; set; }
     }
 }

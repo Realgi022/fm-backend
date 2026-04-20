@@ -13,7 +13,7 @@ namespace BusinessLogic.Models
 
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "amount must be greater than 0.")]
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
         public string? Currency { get; set; }
 

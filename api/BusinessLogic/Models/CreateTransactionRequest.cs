@@ -11,7 +11,7 @@ namespace BusinessLogic.Models
 
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0.")]
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [Required]
         [RegularExpression("^(EUR|USD|GBP|CZK|PLN)$", ErrorMessage = "Invalid currency code")]

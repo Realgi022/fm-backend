@@ -52,10 +52,10 @@ namespace BusinessLogic.Services
                 await _budgetRepository.UpdateMonthlyBudgetAsync(budget);
             }
 
-            double remaining = request.Limit - calculation.Spent;
+            decimal remaining = request.Limit - calculation.Spent;
             int progressPercentage = request.Limit == 0
                 ? 0
-                : (int)Math.Round((calculation.Spent / request.Limit) * 100);
+                : (int)Math.Round((calculation.Spent / request.Limit) * 100m);
 
             return new BudgetResponse
             {
@@ -74,11 +74,11 @@ namespace BusinessLogic.Services
 
             var budget = await _budgetRepository.GetMonthlyBudgetAsync(userId, calculation.Year, calculation.Month);
 
-            double limit = budget?.Limit ?? 0;
-            double remaining = limit - calculation.Spent;
-            int progressPercentage = limit == 0
+            decimal limit = budget?.Limit ?? 0m;
+            decimal remaining = limit - calculation.Spent;
+            int progressPercentage = limit == 0m
                 ? 0
-                : (int)Math.Round((calculation.Spent / limit) * 100);
+                : (int)Math.Round((calculation.Spent / limit) * 100m);
 
             return new BudgetResponse
             {
@@ -106,7 +106,7 @@ namespace BusinessLogic.Services
 
             var transactions = await _transactionRepository.GetByUserAndPeriodAsync(userId, startDate, endDate);
 
-            double spent = transactions
+            decimal spent = transactions
                 .Where(t => t.Type == TransactionType.Expense &&
                             t.Date >= startDate &&
                             t.Date < endDate)
