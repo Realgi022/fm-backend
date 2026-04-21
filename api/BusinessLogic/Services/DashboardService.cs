@@ -46,14 +46,16 @@ namespace BusinessLogic.Services
 
             var totalBalance = await _transactionRepository.GetCurrentBalanceAsync(userId);
 
-            var budgetLimit = budget?.Limit ?? 0;
-            var remaining = budgetLimit - expenses;
-            var progressPercentage = budgetLimit <= 0
-                ? 0
-                : (int)Math.Round((expenses / budgetLimit) * 100);
+            var budgetLimit = budget?.Limit ?? 0m;
+            var remaining = Math.Max(0m, budgetLimit - expenses);
 
-            if (progressPercentage > 100)
-                progressPercentage = 100;
+            decimal rawProgress = budgetLimit <= 0m
+                ? 0m
+                : (expenses / budgetLimit) * 100m;
+
+            rawProgress = Math.Min(rawProgress, 100m);
+
+            int progressPercentage = (int)Math.Round(rawProgress);
 
             return new DashboardOverviewResponse
             {
@@ -62,15 +64,15 @@ namespace BusinessLogic.Services
                 Period = now.ToString("yyyy-MM"),
                 Summary = new DashboardSummary
                 {
-                    TotalBalance = totalBalance,
-                    Income = income,
-                    Expenses = expenses
+                    TotalBalance = Math.Round(totalBalance, 2),
+                    Income = Math.Round(income, 2),
+                    Expenses = Math.Round(expenses, 2)
                 },
                 MonthlyBudget = new MonthlyBudget
                 {
-                    Spent = expenses,
-                    Limit = budgetLimit,
-                    Remaining = remaining,
+                    Spent = Math.Round(expenses, 2),
+                    Limit = Math.Round(budgetLimit, 2),
+                    Remaining = Math.Round(remaining, 2),
                     ProgressPercentage = progressPercentage
                 }
             };
