@@ -6,6 +6,6 @@
         public decimal Limit { get; set; }
         public decimal Spent { get; set; }
         public decimal Remaining { get; set; }
-        public int ProgressPercentage { get; set; }
+        public int? ProgressPercentage { get; set; }
     }
 }

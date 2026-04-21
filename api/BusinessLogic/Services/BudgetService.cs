@@ -3,6 +3,7 @@ using BusinessLogic.Interfaces;
 using DAL.Enum;
 using DAL.Interfaces;
 using DAL.Entities;
+using System.Globalization;
 
 namespace BusinessLogic.Services
 {
@@ -53,8 +54,8 @@ namespace BusinessLogic.Services
             }
 
             decimal remaining = request.Limit - calculation.Spent;
-            int progressPercentage = request.Limit == 0
-                ? 0
+            int? progressPercentage = request.Limit == 0m
+                ? null
                 : (int)Math.Round((calculation.Spent / request.Limit) * 100m);
 
             return new BudgetResponse
@@ -67,7 +68,6 @@ namespace BusinessLogic.Services
             };
         }
 
-
         public async Task<BudgetResponse?> GetMonthlyBudgetAsync(int userId, string? period)
         {
             var calculation = await CalculateBudgetAsync(userId, period);
@@ -76,8 +76,8 @@ namespace BusinessLogic.Services
 
             decimal limit = budget?.Limit ?? 0m;
             decimal remaining = limit - calculation.Spent;
-            int progressPercentage = limit == 0m
-                ? 0
+            int? progressPercentage = limit == 0m
+                ? null
                 : (int)Math.Round((calculation.Spent / limit) * 100m);
 
             return new BudgetResponse
@@ -96,7 +96,12 @@ namespace BusinessLogic.Services
                 ? DateTime.UtcNow.ToString("yyyy-MM")
                 : requestPeriod;
 
-            if (!DateTime.TryParse(period + "-01", out DateTime parsedDate))
+            if (!DateTime.TryParseExact(
+                    period,
+                    "yyyy-MM",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out DateTime parsedDate))
             {
                 throw new ArgumentException("Invalid period format. Use yyyy-MM.");
             }
@@ -107,9 +112,7 @@ namespace BusinessLogic.Services
             var transactions = await _transactionRepository.GetByUserAndPeriodAsync(userId, startDate, endDate);
 
             decimal spent = transactions
-                .Where(t => t.Type == TransactionType.Expense &&
-                            t.Date >= startDate &&
-                            t.Date < endDate)
+                .Where(t => t.Type == TransactionType.Expense)
                 .Sum(t => t.Amount);
 
             return new BudgetCalculationResult
